@@ -81,14 +81,14 @@ window.onload=function(){
 		}*/
 	});
 	bindDefineEvent(oDiv3.obj,'callBackFndown',function(){
-		document.body.style.backgroundColor='blue';
+		document.body.style.backgroundColor='yellow';
 		oDiv3.obj.style.width='200px';
 		// this.a=1; 此处this只此function匿名函数体
 		// console.log(this);
 	});//先绑定 然后在适当的时候触发
 	//console.log(oDiv2.obj.listeners.events[0]); //测试成功绑定
 	bindDefineEvent(oDiv3.obj,'callBackFnup',function(){
-		document.body.style.backgroundColor='gray';
+		document.body.style.backgroundColor='orange';
 		oDiv3.obj.style.width='300px';
 	});
 }
