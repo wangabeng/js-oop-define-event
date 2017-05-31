@@ -55,21 +55,21 @@ window.onload=function(){
 	}
 
 
-	function bindDefineEvent(obj,event,fn){
+	function bindDefineEvent(obj,events,fn){
 		obj.listeners=obj.listeners||{};
-		obj.listeners.events=obj.listeners.events||[];
-		// 把fn添加到obj.listeners.events的数组里
-		obj.listeners.events.push(fn);
+		obj.listeners[events]=obj.listeners[events]||[];
+		// 把fn添加到obj.listeners[events]的数组里
+		obj.listeners[events].push(fn);
 
 		// 绑定常规事件
-		obj.addEventListener?obj.addEventListener(event,fn,false):obj.attachEvent('on'+event,fn);
+		obj.addEventListener?obj.addEventListener(events,fn,false):obj.attachEvent('on'+events,fn);
 
 	}
 
-	function fireEvent(obj,event){
+	function fireEvent(obj,events){
 		// 遍历obj的listeners.events数组 然后执行数组内的函数
-		for (var i = 0; i < obj.listeners.events.length; i++) {
-			obj.listeners.events[i](obj);
+		for (var i = 0; i < obj.listeners[events].length; i++) {
+			obj.listeners[events][i](obj);
 		}
 	}
 }
