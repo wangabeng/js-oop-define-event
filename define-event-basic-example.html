@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+
+<style>
+
+</style>
+
+</head>
+<script></script>
+
+<body>
+
+<button id='test'>btn</button>
+<span id='define'>span</span>
+<button id='fire'>触发span自定义的事件</button>
+
+</body>
+
+</html>
+<script>
+window.onload=function(){
+	var oBtn=document.getElementById('test');
+	var oSpan=document.getElementById('define');
+	var oFire=document.getElementById('fire');
+
+	bindDefineEvent(oBtn,'click',callBack1);//绑定常规事件 点击即可触发
+	bindDefineEvent(oBtn,'click',callBack2);//绑定常规事件 点击即可触发
+
+	bindDefineEvent(oSpan,'show',callBack1);//绑定自定义事件show
+	bindDefineEvent(oSpan,'show',callBack2);//绑定自定义事件show
+	//fireEvent(oSpan,'show');
+	//不自动触发 条件触发
+	oFire.onclick=function(){
+		fireEvent(oSpan,'show');
+	}
+
+	function bindEvent(obj,event,fn){
+		obj.addEventListener?obj.addEventListener(event,fn,false):obj.attachEvent('on'+event,fn);
+	}
+	function callBack1(){
+		alert(111);
+	}
+	function callBack2(){
+		alert(222);
+	}
+
+
+	function bindDefineEvent(obj,event,fn){
+		obj.listeners=obj.listeners||{};
+		obj.listeners.events=obj.listeners.events||[];
+		// 把fn添加到obj.listeners.events的数组里
+		obj.listeners.events.push(fn);
+
+		// 绑定常规事件
+		obj.addEventListener?obj.addEventListener(event,fn,false):obj.attachEvent('on'+event,fn);
+
+	}
+
+	function fireEvent(obj,event){
+		// 遍历obj的listeners.events数组 然后执行数组内的函数
+		for (var i = 0; i < obj.listeners.events.length; i++) {
+			obj.listeners.events[i]();
+		}
+	}
+}
+</script>
