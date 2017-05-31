@@ -68,6 +68,10 @@ window.onload=function(){
 	bindDefineEvent(oDiv2.obj,'callBackFnup',function(){
 		document.body.style.backgroundColor='gray';
 	});
+	//有利于多人协助开发 比如王五入职了 团队要求其添加一个效果
+	bindDefineEvent(oDiv2.obj,'callBackFnup',function(){
+		oDiv2.obj.style.height='500px';
+	});
 	
 
 	var oDiv3=new Drag();
