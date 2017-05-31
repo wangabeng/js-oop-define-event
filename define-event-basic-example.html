@@ -29,8 +29,9 @@ window.onload=function(){
 	bindDefineEvent(oBtn,'click',callBack1);//绑定常规事件 点击即可触发
 	bindDefineEvent(oBtn,'click',callBack2);//绑定常规事件 点击即可触发
 
-	bindDefineEvent(oSpan,'show',callBack1);//绑定自定义事件show
-	bindDefineEvent(oSpan,'show',callBack2);//绑定自定义事件show
+	bindDefineEvent(oSpan,'show',callBack1);//绑定自定义事件到自身的objListeners.event数组
+	bindDefineEvent(oSpan,'show',callBack2);//绑定自定义事件到自身的objListeners.event数组
+	bindDefineEvent(oSpan,'show',callBackChangeColor);//绑定自定义事件到自身的objListeners.event数组
 	//fireEvent(oSpan,'show');
 	//不自动触发 条件触发
 	oFire.onclick=function(){
@@ -43,8 +44,12 @@ window.onload=function(){
 	function callBack1(){
 		alert(111);
 	}
-	function callBack2(){
+	function callBack2(){//张三的代码
 		alert(222);
+		//obj.style.backgroundColor='red';//李四来了 不用在张三的代码里添加 避免耦合 自己创建一个函数来执行变色的任务
+	}
+	function callBackChangeColor(obj){//李四执行变色的任务
+		obj.style.backgroundColor='red';
 	}
 
 
@@ -62,7 +67,7 @@ window.onload=function(){
 	function fireEvent(obj,event){
 		// 遍历obj的listeners.events数组 然后执行数组内的函数
 		for (var i = 0; i < obj.listeners.events.length; i++) {
-			obj.listeners.events[i]();
+			obj.listeners.events[i](obj);
 		}
 	}
 }
