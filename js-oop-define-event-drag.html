@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Document</title>
+
+<style>
+	*{
+		padding:0;
+		margin:0;
+	}
+	#test{
+		width:100px;
+		height:100px;
+		position:absolute;
+		background-color:green;
+		left:0;
+		top:0;
+	}
+	#test2{
+		width:100px;
+		height:100px;
+		position:absolute;
+		background-color:red;
+		left:150px;
+		top:0;
+	}
+	#test3{
+		width:100px;
+		height:100px;
+		position:absolute;
+		background-color:pink;
+		left:300px;
+		top:0;
+	}
+</style>
+
+</head>
+<script></script>
+
+<body>
+
+<div id='test'></div>
+<div id='test2'></div>
+<div id='test3'></div>
+
+</body>
+
+</html>
+<script>
+window.onload=function(){
+	var oDiv=new Drag();
+	oDiv.init({
+		idname:'test'
+	});
+
+	var oDiv2=new Drag();
+	oDiv2.init({
+		idname:'test2'/*,
+		callBackFndown:function(){
+			document.body.style.backgroundColor='blue';
+		}*/
+	});
+	bindDefineEvent(oDiv2.obj,'callBackFndown',function(){
+		document.body.style.backgroundColor='blue';
+	});//先绑定 然后在适当的时候触发
+	//console.log(oDiv2.obj.listeners.events[0]); //测试成功绑定
+	bindDefineEvent(oDiv2.obj,'callBackFnup',function(){
+		document.body.style.backgroundColor='gray';
+	});
+	
+
+	var oDiv3=new Drag();
+	oDiv3.init({
+		idname:'test3'/*,
+		callBackFndown:function(){
+			document.title='blue';
+		},
+		callBackFnup:function(){
+			document.title='orig';
+		}*/
+	});
+	bindDefineEvent(oDiv3.obj,'callBackFndown',function(){
+		document.body.style.backgroundColor='blue';
+		oDiv3.obj.style.width='200px';
+		// this.a=1; 此处this只此function匿名函数体
+		// console.log(this);
+	});//先绑定 然后在适当的时候触发
+	//console.log(oDiv2.obj.listeners.events[0]); //测试成功绑定
+	bindDefineEvent(oDiv3.obj,'callBackFnup',function(){
+		document.body.style.backgroundColor='gray';
+		oDiv3.obj.style.width='300px';
+	});
+}
+
+function Drag(){
+	this.disX=0;
+	this.disY=0;
+	this.settings={//默认设置参数
+		idname:''/*,
+		callBackFndown:function(){
+		},
+		callBackFnup:function(){
+		}*/
+	}
+}
+Drag.prototype.init=function(paraObj){//为什么str不能传递到fnup里 见最下面的代码
+	//
+	extending(this.settings,paraObj);
+	var outerThat=this;//this指代新建的对象Drag
+	this.obj=document.getElementById(this.settings.idname);
+	this.obj.onmousedown=function(){
+		fireEvent(this,'callBackFndown');
+		outerThat.fndown();
+	}
+}
+Drag.prototype.fndown=function(ev){
+	//console.log(this.callBackFnup);
+	var ev=ev||window.event;
+	this.disX=ev.clientX-this.obj.offsetLeft;//this指代新建的对象Drag
+	this.disY=ev.clientY-this.obj.offsetTop;
+	var that=this;
+	//move
+	document.onmousemove=function(){
+		that.fnmove();//Drag对象调用fnmove这个方法 
+	}
+	//up
+	document.onmouseup=function(){
+		fireEvent(that.obj,'callBackFnup');
+		that.fnup();
+		//that.settings.callBackFnup();
+		//console.log(that);
+	}
+	return false;
+}
+Drag.prototype.fnmove=function(ev){
+	var ev=ev||window.event;
+	this.obj.style.left=ev.clientX-this.disX+'px';
+	this.obj.style.top=ev.clientY-this.disY+'px';
+	//console.log(this); 谁调用 this就是指谁Drag对象
+}
+Drag.prototype.fnup=function(){
+	document.onmousemove=null;
+}
+//方法继承公共函数
+function extending(obj1,obj2){
+	for (var attr in obj2) {
+		obj1[attr]=obj2[attr];
+	}
+}
+
+//自定义绑定事件
+function bindDefineEvent(obj,events,fn){//以后变量都用中括号表示 原因分析如下：
+	// 比如参数里events为'show',在函数体内如果不用中括号 相当于每次给函数体内自定义一个events属性和参数传过来的events无关。
+	obj.listeners=obj.listeners||{};
+	obj.listeners[events]=obj.listeners[events]||[];
+	// 把fn添加到obj.listeners.events的数组里
+	obj.listeners[events].push(fn);
+	//console.log(obj.listeners.events[0]);//测试成功绑定
+
+	// 绑定常规事件
+	obj.addEventListener?obj.addEventListener(events,fn,false):obj.attachEvent('on'+events,fn);
+
+}
+//自定义绑定事件 触发 //这样还是会出问题 以后变量都用中括号表示 
+/*function fireEvent(obj,events){//坑在这 大坑 obj.listeners['events']或obj.listeners.events都可正常使用
+	// 遍历obj的listeners.events数组 然后执行数组内的函数
+	if (obj.listeners&&obj.listeners['events']) {//为什么还要做个判断呢？？
+		for (var i = 0; i < obj.listeners['events'].length; i++) {
+			obj.listeners['events'][i]();
+		}
+	}
+}*/
+
+function fireEvent(obj,events){   //主动触发自定义事件
+	
+	if(obj.listeners && obj.listeners[events]){
+		for(var i=0;i<obj.listeners[events].length;i++){
+			 obj.listeners[events][i]();
+		}
+	}
+	// console.log(typeof !!obj.listeners&&!!obj.listeners.events);
+	// obj.listeners.events[0]();//ok
+}
+
+
+</script>
